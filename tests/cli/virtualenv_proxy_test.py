@@ -58,7 +58,7 @@ class TestVirtualenvProxyCreation(object):
                                system_site_packages=True,
                                verbose=True)
         mock_cmd.assert_called_once_with(
-            ["virtualenv", VENV_PATH, "--system-site-packages"],
+            ["virtualenv", "--always-copy", VENV_PATH, "--system-site-packages"],
             stdout=venv._out_stream,
             stderr=venv._err_stream,
             err_msg=mock.ANY
@@ -72,7 +72,7 @@ class TestVirtualenvProxyCreation(object):
                                system_site_packages=False,
                                verbose=True)
         mock_cmd.assert_called_once_with(
-            ["virtualenv", VENV_PATH],
+            ["virtualenv", "--always-copy", VENV_PATH],
             stdout=venv._out_stream,
             stderr=venv._err_stream,
             err_msg=mock.ANY
