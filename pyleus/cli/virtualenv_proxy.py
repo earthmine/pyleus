@@ -53,7 +53,7 @@ class VirtualenvProxy(object):
 
     def _create_virtualenv(self):
         """Creates the actual virtualenv"""
-        cmd = ["virtualenv", self.path]
+        cmd = ["virtualenv", "--always-copy", self.path]
         if self._system_site_packages:
             cmd.append("--system-site-packages")
 
