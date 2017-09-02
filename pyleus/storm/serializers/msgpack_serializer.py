@@ -50,6 +50,6 @@ class MsgpackSerializer(Serializer):
         """"Messages are delimited by msgapck itself, no need for Storm
         multilang end line.
         """
-        # Set use_bin_type=True to support Python 3.6 unicode string
-        msgpack.pack(msg_dict, self._output_stream, use_bin_type=True)
+        # Don't set use_bin_type=True because the receiving end (Java component) does not expect unicode strings
+        msgpack.pack(msg_dict, self._output_stream)
         self._output_stream.flush()

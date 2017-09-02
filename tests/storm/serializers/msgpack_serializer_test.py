@@ -39,7 +39,7 @@ class TestMsgpackSerializer(SerializerTestCase):
             'hello': "world",
         }
 
-        expected_output = msgpack.packb(msg_dict, use_bin_type=True)
+        expected_output = msgpack.packb(msg_dict)
 
         with mock.patch.object(
                 self.instance, '_output_stream', BytesIO()) as sio:
