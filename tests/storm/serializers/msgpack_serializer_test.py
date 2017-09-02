@@ -14,7 +14,7 @@ class TestMsgpackSerializer(SerializerTestCase):
 
     def test_read_msg_dict(self):
         msg_dict = {
-            b'hello': b"world",
+            'hello': "world",
         }
 
         encoded_msg = msgpack.packb(msg_dict)
@@ -39,7 +39,7 @@ class TestMsgpackSerializer(SerializerTestCase):
             'hello': "world",
         }
 
-        expected_output = msgpack.packb(msg_dict)
+        expected_output = msgpack.packb(msg_dict, use_bin_type=True)
 
         with mock.patch.object(
                 self.instance, '_output_stream', BytesIO()) as sio:
