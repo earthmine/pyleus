@@ -149,7 +149,10 @@ class Component(object):
             # Pyleus serializer outputs byte sequence; however, Python 3.6 sys.stdout expects unicode stream inputs.
             # In order to write binary data to stdout, we use the underlying binary buffer object.
             # Ref: https://docs.python.org/3/library/sys.html#sys.stderr
-            output_stream = sys.stdout.buffer
+            try:
+                output_stream = sys.stdout.buffer
+            except AttributeError:
+                output_stream = sys.stdout
 
         self._input_stream = input_stream
         self._output_stream = output_stream
