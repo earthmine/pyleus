@@ -10,7 +10,7 @@ import com.yelp.pyleus.spout.PythonSpout;
 
 public class PythonComponentsFactory {
 
-    public static final String VIRTUALENV_INTERPRETER = "pyleus_venv/bin/python";
+    public static final String VIRTUALENV_INTERPRETER = "/opt/env/bin/newrelic-admin run-program pyleus_venv/bin/python";
     public static final String MODULE_OPTION = "-m";
 
     private String[] buildCommand(final String module, final Map<String, Object> argumentsMap,
