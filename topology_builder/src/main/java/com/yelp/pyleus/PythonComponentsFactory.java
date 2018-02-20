@@ -11,7 +11,6 @@ import com.yelp.pyleus.spout.PythonSpout;
 public class PythonComponentsFactory {
 
     public static final String VIRTUALENV_INTERPRETER = "pyleus_venv/bin/python";
-//    public static final String NATIVE_INTERPRETER = "python3";
     public static final String NEW_RELIC_PREFIX = String.format("NEW_RELIC_CONFIG_FILE=newrelic.ini %s pyleus_venv/bin/newrelic-admin run-program", VIRTUALENV_INTERPRETER);
     public static final String MODULE_OPTION = "-m";
 
@@ -26,7 +25,6 @@ public class PythonComponentsFactory {
         StringBuilder strBuf = new StringBuilder();
         // Done before launching any spout or bolt in order to cope with Storm permissions bug
         strBuf.append(String.format("chmod 755 %s; %s %s", VIRTUALENV_INTERPRETER, NEW_RELIC_PREFIX, VIRTUALENV_INTERPRETER));
-//        strBuf.append(String.format("%s %s", NEW_RELIC_PREFIX, NATIVE_INTERPRETER));
         strBuf.append(String.format(" %s %s", MODULE_OPTION, module));
 
         if (argumentsMap != null) {
