@@ -11,6 +11,8 @@ import com.yelp.pyleus.spout.PythonSpout;
 public class PythonComponentsFactory {
 
     public static final String VIRTUALENV_INTERPRETER = "pyleus_venv/bin/python";
+    // The developer of the topology is responsible for putting a newrelic.ini at the root of the topology folder,
+    // alongside with the topology definition file (.yml).
     public static final String NEW_RELIC_PREFIX = String.format("NEW_RELIC_CONFIG_FILE=newrelic.ini %s pyleus_venv/bin/newrelic-admin run-program", VIRTUALENV_INTERPRETER);
     public static final String MODULE_OPTION = "-m";
 
