@@ -11,6 +11,16 @@ import com.yelp.pyleus.spout.PythonSpout;
 public class PythonComponentsFactory {
 
     public static final String VIRTUALENV_INTERPRETER = "pyleus_venv/bin/python";
+    // A few notes on how this works:
+    // (1) The developer of the topology is responsible for putting a newrelic.ini at the root of the topology folder,
+    // alongside with the topology definition file (.yml).
+    // (2) newrelic-admin only works when the python process it monitors uses the same python installation that
+    // installed newrelic-admin, as described here:
+    // https://docs.newrelic.com/docs/agents/python-agent/installation-configuration/python-agent-admin-script
+    // (3) newrelic-admin installed by Pyleus in the virtualenv actually points to the wrong python installation in a
+    // temporary folder. We work around that issue by run it with a specified python installation instead of
+    // running it directly as a self-executable script.
+    public static final String NEW_RELIC_PREFIX = String.format("NEW_RELIC_CONFIG_FILE=newrelic.ini %s pyleus_venv/bin/newrelic-admin run-program", VIRTUALENV_INTERPRETER);
     public static final String MODULE_OPTION = "-m";
 
     private String[] buildCommand(final String module, final Map<String, Object> argumentsMap,
@@ -23,7 +33,7 @@ public class PythonComponentsFactory {
 
         StringBuilder strBuf = new StringBuilder();
         // Done before launching any spout or bolt in order to cope with Storm permissions bug
-        strBuf.append(String.format("chmod 755 %s; %s", VIRTUALENV_INTERPRETER, VIRTUALENV_INTERPRETER));
+        strBuf.append(String.format("chmod 755 %s; %s %s", VIRTUALENV_INTERPRETER, NEW_RELIC_PREFIX, VIRTUALENV_INTERPRETER));
         strBuf.append(String.format(" %s %s", MODULE_OPTION, module));
 
         if (argumentsMap != null) {
