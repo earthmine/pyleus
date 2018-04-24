@@ -17,6 +17,8 @@ import backtype.storm.topology.IRichSpout;
 import backtype.storm.topology.SpoutDeclarer;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
+import backtype.storm.spout.SchemeAsMultiScheme;
+import backtype.storm.spout.RawScheme;
 import storm.kafka.KafkaSpout;
 import storm.kafka.KeyValueSchemeAsMultiScheme;
 import storm.kafka.SpoutConfig;
@@ -100,7 +102,7 @@ public class PyleusTopologyBuilder {
 
         IRichSpout spout;
         if (spec.type.equals("kafka")) {
-            spout = handleKafkaSpout(builder, spec);
+            spout = handleKafkaSpout(builder, spec, topologySpec);
         } else {
             spout = handlePythonSpout(builder, spec, topologySpec);
         }
@@ -119,7 +121,8 @@ public class PyleusTopologyBuilder {
 
     public static IRichSpout handleKafkaSpout(
             @SuppressWarnings("unused") final TopologyBuilder builder,
-            final SpoutSpec spec) {
+            final SpoutSpec spec,
+            final TopologySpec topologySpec) {
         String topic = (String) spec.options.get("topic");
         if (topic == null) {
             throw new RuntimeException("Kafka spout must have topic");
@@ -132,16 +135,18 @@ public class PyleusTopologyBuilder {
 
         String zkRoot = (String) spec.options.get("zk_root");
         if (zkRoot == null) {
-            zkRoot = String.format(KAFKA_ZK_ROOT_FMT, spec.name);
+            zkRoot = String.format(KAFKA_ZK_ROOT_FMT, topologySpec.name);
         }
-
+        
+        String brokerZkPath = (String) spec.options.get("broker_zk_path");
+        
         String consumerId = (String) spec.options.get("consumer_id");
         if (consumerId == null) {
-            consumerId = String.format(KAFKA_CONSUMER_ID_FMT, spec.name);
+            consumerId = String.format(KAFKA_CONSUMER_ID_FMT, topologySpec.name);
         }
 
         SpoutConfig config = new SpoutConfig(
-            new ZkHosts(zkHosts),
+            brokerZkPath == null ? new ZkHosts(zkHosts) : new ZkHosts(zkHosts,brokerZkPath),
             topic,
             zkRoot,
             consumerId
@@ -157,10 +162,13 @@ public class PyleusTopologyBuilder {
             config.startOffsetTime = Long.valueOf(startOffsetTime.toString());
         }
 
-        // TODO: this mandates that messages are UTF-8. We should allow for binary data
-        // in the future, or once users can have Java components, let them provide their
-        // own JSON serialization method. Or wait on STORM-138.
-        config.scheme = new KeyValueSchemeAsMultiScheme(new StringKeyValueScheme());
+        // support binary data
+        Boolean binaryData = (Boolean) spec.options.get("binary_data");
+        if (binaryData != null) {
+            config.scheme = new SchemeAsMultiScheme(new RawScheme());
+        } else {
+            config.scheme = new KeyValueSchemeAsMultiScheme(new StringKeyValueScheme());
+        }
 
         return new KafkaSpout(config);
     }
@@ -295,7 +303,7 @@ public class PyleusTopologyBuilder {
             runLocally(spec.name, topology, debug, spec.serializer);
         } else {
             Config conf = new Config();
-            conf.setDebug(false);
+            conf.setDebug(spec.topology_debug);
 
             setSerializer(conf, spec.serializer);
 
@@ -317,6 +325,26 @@ public class PyleusTopologyBuilder {
 
             if (spec.ackers != -1) {
                 conf.setNumAckers(spec.ackers);
+            }
+
+            if (spec.sleep_spout_wait_strategy_time_ms != -1) {
+                conf.put(Config.TOPOLOGY_SLEEP_SPOUT_WAIT_STRATEGY_TIME_MS, spec.sleep_spout_wait_strategy_time_ms);
+            }
+
+            if (spec.worker_childopts_xmx != "") {
+                conf.put(Config.TOPOLOGY_WORKER_CHILDOPTS, spec.worker_childopts_xmx);
+            }
+
+            if (spec.executor_receive_buffer_size != -1) {
+                conf.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, spec.executor_receive_buffer_size);
+            }
+
+            if (spec.executor_send_buffer_size != -1) {
+                conf.put(Config.TOPOLOGY_EXECUTOR_SEND_BUFFER_SIZE, spec.executor_send_buffer_size);
+            }
+
+            if (spec.transfer_buffer_size != -1) {
+                conf.put(Config.TOPOLOGY_TRANSFER_BUFFER_SIZE, spec.transfer_buffer_size);
             }
 
             try {

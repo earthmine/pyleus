@@ -9,7 +9,11 @@ from pyleus.storm.serializers.serializer import Serializer
 
 
 def _messages_generator(input_stream):
-    unpacker = msgpack.Unpacker()
+    # Python 3.6 strings are in unicode and are different from generic byte sequence (binary).
+    # As of v0.4.8, msgpack-python supports the distinction between str and bin types, but it is not enabled by default.
+    # To enable it requires using use_bin_type=True option in Packer and encoding="utf-8" option in Unpacker
+    # Ref: https://github.com/msgpack/msgpack-python#string-and-binary-type
+    unpacker = msgpack.Unpacker(encoding='utf-8')
     while True:
         # f.read(n) on sys.stdin blocks until n bytes are read, causing
         # serializer to hang.
@@ -46,5 +50,6 @@ class MsgpackSerializer(Serializer):
         """"Messages are delimited by msgapck itself, no need for Storm
         multilang end line.
         """
+        # Don't set use_bin_type=True because the receiving end (Java component) does not expect unicode strings
         msgpack.pack(msg_dict, self._output_stream)
         self._output_stream.flush()

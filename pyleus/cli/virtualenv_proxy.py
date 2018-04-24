@@ -35,7 +35,8 @@ class VirtualenvProxy(object):
     def __init__(self, path,
                  system_site_packages=False,
                  pypi_index_url=None,
-                 use_wheel=True,
+                 # Default to false since --use-wheel flag is deprecated since pip 9.0.1
+                 use_wheel=False,
                  python_interpreter=None,
                  verbose=False):
         """Creates the virtualenv with the options specified"""
@@ -55,7 +56,7 @@ class VirtualenvProxy(object):
 
     def _create_virtualenv(self):
         """Creates the actual virtualenv"""
-        cmd = ["virtualenv", self.path]
+        cmd = ["virtualenv", "--always-copy", self.path]
         if self._system_site_packages:
             cmd.append("--system-site-packages")
 

@@ -13,6 +13,7 @@ import shutil
 import tempfile
 import yaml
 import zipfile
+import sys
 
 from pyleus import __version__
 from pyleus.cli.topology_spec import TopologySpec
@@ -27,6 +28,7 @@ RESOURCES_PATH = "resources"
 YAML_FILENAME = "pyleus_topology.yaml"
 DEFAULT_REQUIREMENTS_FILENAME = "requirements.txt"
 VIRTUALENV_NAME = "pyleus_venv"
+SYS_ENCODING = sys.getdefaultencoding()
 
 log = logging.getLogger(__name__)
 
@@ -96,7 +98,7 @@ def _remove_pyleus_base_jar(venv):
     virtualenv, and we don't want to attempt its removal in that case.
     """
     base_jar_path = venv.execute_module("pyleus._base_jar",
-                                        cwd=venv.path).strip()
+                                        cwd=venv.path).decode(SYS_ENCODING).strip()
     if _path_contained_by(venv.path, base_jar_path):
         os.remove(base_jar_path)
 

@@ -11,11 +11,11 @@ Please visit our `documentation`_.
 |master-status|  |develop-status|
 ===============  ================
 
-.. |master-status| image:: https://travis-ci.org/Yelp/pyleus.svg?branch=master
-    :target: https://travis-ci.org/Yelp/pyleus
+.. |master-status| image:: https://travis-ci.org/YelpArchive/pyleus.svg?branch=master
+    :target: https://travis-ci.org/YelpArchive/pyleus
 
-.. |develop-status| image:: https://travis-ci.org/Yelp/pyleus.svg?branch=develop
-    :target: https://travis-ci.org/Yelp/pyleus
+.. |develop-status| image:: https://travis-ci.org/YelpArchive/pyleus.svg?branch=develop
+    :target: https://travis-ci.org/YelpArchive/pyleus
 
 About
 -----

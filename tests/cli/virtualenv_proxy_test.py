@@ -58,7 +58,7 @@ class TestVirtualenvProxyCreation(object):
                                system_site_packages=False,
                                verbose=True)
         mock_cmd.assert_called_once_with(
-            ["virtualenv", VENV_PATH],
+            ["virtualenv", "--always-copy", VENV_PATH],
             stdout=venv._out_stream,
             stderr=venv._err_stream,
             err_msg=mock.ANY
@@ -72,7 +72,7 @@ class TestVirtualenvProxyCreation(object):
                                system_site_packages=True,
                                verbose=True)
         mock_cmd.assert_called_once_with(
-            ["virtualenv", VENV_PATH, "--system-site-packages"],
+            ["virtualenv", "--always-copy", VENV_PATH, "--system-site-packages"],
             stdout=venv._out_stream,
             stderr=venv._err_stream,
             err_msg=mock.ANY
@@ -80,14 +80,13 @@ class TestVirtualenvProxyCreation(object):
 
     @mock.patch.object(builtins, 'open', autospec=True)
     @mock.patch.object(virtualenv_proxy, '_exec_shell_cmd', autospec=True)
-    def test__create_virtualenv_python_interpreter(
+    def test__create_virtualenv_no_system_site_packages(
             self, mock_cmd, mock_open):
-        path = "python2.7"
         venv = VirtualenvProxy(VENV_PATH,
-                               python_interpreter=path,
+                               system_site_packages=False,
                                verbose=True)
         mock_cmd.assert_called_once_with(
-            ["virtualenv", VENV_PATH, "--python", path],
+            ["virtualenv", "--always-copy", VENV_PATH],
             stdout=venv._out_stream,
             stderr=venv._err_stream,
             err_msg=mock.ANY

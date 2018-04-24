@@ -14,7 +14,7 @@ class TestMsgpackSerializer(SerializerTestCase):
 
     def test_read_msg_dict(self):
         msg_dict = {
-            b'hello': b"world",
+            'hello': "world",
         }
 
         encoded_msg = msgpack.packb(msg_dict)

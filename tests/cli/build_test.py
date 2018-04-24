@@ -149,7 +149,7 @@ class TestBuild(object):
         mock_venv_path = "/path/to/venv"
 
         def mock_execute_module(module, cwd):
-            return "/path/to/venv/inside.jar"
+            return b"/path/to/venv/inside.jar"
 
         mock_venv = mock.Mock(
             path=mock_venv_path,
@@ -166,7 +166,7 @@ class TestBuild(object):
         mock_venv_path = "/path/to/venv"
 
         def mock_execute_module(module, cwd):
-            return "/foo/bar/outside.jar"
+            return b"/foo/bar/outside.jar"
 
         mock_venv = mock.Mock(
             path=mock_venv_path,
